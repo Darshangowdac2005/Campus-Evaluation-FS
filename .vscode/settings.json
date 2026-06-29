@@ -1,7 +1,7 @@
 {
-  "chat.disableAIFeatures": false,
-  "chat.agent.enabled": true,
-  "editor.inlineSuggest.enabled": true,
+  "chat.disableAIFeatures": true,
+  "chat.agent.enabled": false,
+  "editor.inlineSuggest.enabled": false,
   "files.exclude": {
     "**/.vscode": true
   },
