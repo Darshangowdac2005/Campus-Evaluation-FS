@@ -14,21 +14,40 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import { NotificationCard } from "../components/NotificationCard";
 import { NotificationFilter } from "../components/NotificationFilter";
 import { useNotifications } from "../hooks/useNotifications";
+import { markAsRead, deleteNotification } from "../api/notifications";
 
 export function NotificationsPage() {
-  const [filter, setFilter] = useState();
-  const [page, setPage] = useState("1");
+  const [filter, setFilter] = useState("All");
+  const [page, setPage] = useState(1);
 
-  const { notifications, totalPages, loading, error } = useNotifications();
-
-  const unreadCount = 2;
+  const { notifications, totalPages, loading, error, unreadCount, refetch } =
+    useNotifications(filter, page);
 
   const handleFilterChange = (newFilter) => {
-
+    setFilter(newFilter);
+    setPage(1); // reset to first page when changing filters
   };
 
   const handlePageChange = (_, newPage) => {
+    setPage(newPage);
+  };
 
+  const handleMarkRead = async (id) => {
+    try {
+      await markAsRead(id);
+      refetch();
+    } catch (err) {
+      console.error("Failed to mark as read:", err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteNotification(id);
+      refetch();
+    } catch (err) {
+      console.error("Failed to delete:", err);
+    }
   };
 
   return (
@@ -48,7 +67,7 @@ export function NotificationsPage() {
         <NotificationFilter value={filter} onChange={handleFilterChange} />
       </Box>
 
-      {true && (
+      {loading && (
         <Box display="flex" justifyContent="center" py={6}>
           <CircularProgress />
         </Box>
@@ -58,19 +77,26 @@ export function NotificationsPage() {
         <Alert severity="error">Failed to load notifications: {error}</Alert>
       )}
 
-      {loading && !error && notifications.length == "0" && (
-        <Alert severity="info">Something message</Alert>
+      {!loading && !error && notifications.length === 0 && (
+        <Alert severity="info">
+          No notifications found. Try changing the filter or check back later.
+        </Alert>
       )}
 
-      {loading && !error && notifications.length > 0 && (
+      {!loading && !error && notifications.length > 0 && (
         <Stack spacing={1.5}>
           {notifications.map((n) => (
-            <></>
+            <NotificationCard
+              key={n._id}
+              notification={n}
+              onMarkRead={handleMarkRead}
+              onDelete={handleDelete}
+            />
           ))}
         </Stack>
       )}
 
-      {!loading && (
+      {!loading && totalPages > 1 && (
         <Box display="flex" justifyContent="center" mt={4}>
           <Pagination
             count={totalPages}

@@ -7,11 +7,21 @@ export function NotificationFilter({ value, onChange }) {
     <ToggleButtonGroup
       value={value}
       exclusive
+      onChange={(_, newValue) => {
+        // don't allow deselecting - always keep one selected
+        if (newValue !== null) {
+          onChange(newValue);
+        }
+      }}
       size="small"
       sx={{ flexWrap: "wrap", gap: 0.5 }}
     >
       {filters.map((type) => (
-        <ToggleButton value={type} sx={{ textTransform: "none", px: 2 }}>
+        <ToggleButton
+          key={type}
+          value={type}
+          sx={{ textTransform: "none", px: 2 }}
+        >
           {type}
         </ToggleButton>
       ))}

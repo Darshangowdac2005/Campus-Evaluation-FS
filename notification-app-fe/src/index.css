@@ -1,0 +1,12 @@
+/* base styles - mui handles most of this but just in case */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Roboto', sans-serif;
+  background-color: #fafafa;
+  min-height: 100vh;
+}
